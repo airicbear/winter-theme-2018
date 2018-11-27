@@ -1,4 +1,4 @@
-let rand = (max = 1) => Math.random() * max;
+const rand = (max = 1) => Math.random() * max;
 
 /**
  * Basic 2D Vector
@@ -20,14 +20,14 @@ function Vector2(x, y) {
  * @param {Vector2} velocity 
  * @param {Vector2} scale 
  */
-function Object2(position, velocity, scale) {
+function Object2(position, velocity, scale, color = "white") {
   this.position = position;
   this.velocity = velocity;
   this.scale = scale;
+  this.color = color;
   this.move = function () {
     this.position = this.position.add(this.velocity);
   }
-  this.color = "white";
   
   this.drawSquare = function (ctx) {
     ctx.fillStyle = this.color;
@@ -95,8 +95,11 @@ const winterTheme = {
       if (snowflakes[i].position.y > canvas.height || 
           snowflakes[i].position.x < -snowflakes[i].scale.x ||
           snowflakes[i].position.x > canvas.width + snowflakes[i].scale.x) {
-        snowflakes[i].position = new Vector2(rand(canvas.width), 0);
+        snowflakes[i].position = new Vector2(rand(canvas.width), -snowflakes[i].scale.y);
+      } else if (snowflakes[i].position.y < -snowflakes[i].scale.y) {
+        snowflakes[i].position = new Vector2(rand(canvas.width), canvas.height);
       } else {
+        snowflakes[i].velocity = snowflakes[i].velocity.add(new Vector2((GetAxis("Horizontal") * snowflakes[i].scale.x) / 50, (GetAxis("Vertical") * snowflakes[i].scale.y) / 50));
         snowflakes[i].move();
       }
     }
@@ -109,7 +112,7 @@ const winterTheme = {
     document.body.appendChild(canvas);
 
     // Create the snowflakes
-    const snowflakes = this.createSnowflakes(canvas, 50);
+    let snowflakes = this.createSnowflakes(canvas, 50);
 
     // Update the snowflakes
     this.update(canvas, snowflakes);
