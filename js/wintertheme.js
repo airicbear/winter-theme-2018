@@ -27,6 +27,32 @@ function Object2(position, velocity, scale) {
   this.move = function () {
     this.position = this.position.add(this.velocity);
   }
+  this.color = "white";
+  
+  this.drawSquare = function (ctx) {
+    ctx.fillStyle = this.color;
+    ctx.beginPath();
+    ctx.moveTo(this.position.x - this.scale.x, this.position.y - this.scale.y);
+    ctx.lineTo(this.position.x + this.scale.x, this.position.y - this.scale.y);
+    ctx.lineTo(this.position.x + this.scale.x, this.position.y + this.scale.y);
+    ctx.lineTo(this.position.x - this.scale.x, this.position.y + this.scale.y);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  this.drawCircle = function (ctx) {
+    ctx.fillStyle = this.color;
+    ctx.beginPath();
+    ctx.arc(this.position.x, this.position.y, this.scale.x, 0, 2 * Math.PI);
+    ctx.closePath();
+    ctx.fill();
+  }
+  
+  this.drawImage = function (ctx, imgPath) {
+    let img = new Image();
+    img.src = imgPath;
+    ctx.drawImage(img, this.position.x - img.width / 2, this.position.y - img.height / 2);
+  }
 }
 
 function drawBackground(canvas, backgroundColor = "black") {
@@ -44,26 +70,25 @@ function createCanvas (width, height, backgroundColor = "black") {
 
 const winterTheme = {
   "drawSnowflake": function (ctx, snowflake, color = "white") {
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.arc(snowflake.position.x, snowflake.position.y, snowflake.scale.x, 0, 2 * Math.PI);
-    ctx.fill();
+    snowflake.drawCircle(ctx);
   },
   "createRandomSnowflake": function (canvas) {
+    let randSize = rand(5) + 1;
     let snowflakePosition = new Vector2(rand(canvas.width), rand(canvas.height));
     let snowflakeVelocity = new Vector2(rand(2) - 1, rand(5) + 1);
-    let snowflakeSize = new Vector2(rand(5) + 1, rand(5) + 1);
+    let snowflakeSize = new Vector2(randSize, randSize);
     let snowflake = new Object2(snowflakePosition, snowflakeVelocity, snowflakeSize);
     return snowflake;
   },
-  "createSnowflakes": function (canvas, amount) {
+  "createSnowflakes": function (canvas, numSnowflakes) {
     let snowflakes = [];
-    for (let i = 0; i < amount; i++) {
+    for (let i = 0; i < numSnowflakes; i++) {
       snowflakes.push(this.createRandomSnowflake(canvas));
     }
     return snowflakes;
   },
   "update": function (canvas, snowflakes) {
+    window.requestAnimationFrame(() => this.update(canvas, snowflakes));
     drawBackground(canvas, backgroundColor = "skyblue");
     for (let i = 0; i < snowflakes.length; i++) {
       this.drawSnowflake(canvas.getContext("2d"), snowflakes[i]);
@@ -87,8 +112,6 @@ const winterTheme = {
     const snowflakes = this.createSnowflakes(canvas, 50);
 
     // Update the snowflakes
-    setInterval(() => {
-      this.update(canvas, snowflakes);
-    }, 10);
+    this.update(canvas, snowflakes);
   },
 }
