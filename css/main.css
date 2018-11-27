@@ -1,0 +1,9 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #353535;
+  margin: 10vh 0;
+  text-align: center;
+}
