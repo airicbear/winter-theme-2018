@@ -147,8 +147,10 @@ const winterTheme = {
    * - `size`: `1` to `6`
    * @param {HTMLCanvasElement} canvas 
    */
-  "createRandomSnowflake": function (canvas) {
-    let snowflakePosition = new Vector2(rand(canvas.width), rand(canvas.height));
+  "createRandomSnowflake": function (canvas, 
+    position = new Vector2(rand(canvas.width), rand(canvas.height))
+  ) {
+    let snowflakePosition = position;
     let snowflakeVelocity = new Vector2(rand(2) - 1, rand(5) + 1);
     let randSize = rand(5) + 1;
     let snowflakeSize = new Vector2(randSize, randSize);
@@ -176,14 +178,17 @@ const winterTheme = {
    * @param {Object2} snowflake 
    */
   "wrapSnowflake": function (canvas, snowflake) {
+    const wrap = (x, y) => {
+      snowflake.position = new Vector2(x, y);
+    };
     if (snowflake.position.y > canvas.height) {
-      snowflake.position = new Vector2(rand(canvas.width), -snowflake.scale.y);
+      wrap(rand(canvas.width), -snowflake.scale.y);
     } else if (snowflake.position.y < -snowflake.scale.y) {
-      snowflake.position = new Vector2(rand(canvas.width), canvas.height);
+      wrap(rand(canvas.width), canvas.height);
     } else if (snowflake.position.x < -snowflake.scale.x) {
-      snowflake.position = new Vector2(canvas.width, rand(canvas.height));
+      wrap(canvas.width, rand(canvas.height));
     } else if (snowflake.position.x > canvas.width + snowflake.scale.x) {
-      snowflake.position = new Vector2(-snowflake.scale.x, rand(canvas.height));
+      wrap(-snowflake.scale.x, rand(canvas.height));
     }
   },
 
@@ -193,6 +198,8 @@ const winterTheme = {
    * @param {Object2[]} snowflakes 
    */
   "update": function (canvas, snowflakes) {
+    canvas.width = document.documentElement.clientWidth - 17
+    canvas.height = document.documentElement.clientHeight - 4;
     const ctx = canvas.getContext("2d");
 
     // Start the loop
@@ -231,7 +238,7 @@ const winterTheme = {
    */
   "main": function () {
     // Create the canvas to draw on
-    const canvas = createCanvas(500, 500, backgroundColor = "skyblue");
+    const canvas = createCanvas(document.documentElement.clientWidth - 17, document.documentElement.clientHeight - 4, backgroundColor = "skyblue");
 
     // Add the canvas to the website
     document.body.appendChild(canvas);

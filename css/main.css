@@ -4,6 +4,11 @@
 
 body {
   background-color: #353535;
-  margin: 10vh 0;
+  margin: 0;
   text-align: center;
+  overflow: hidden;
+}
+
+canvas {
+  width: 100vw;
 }
